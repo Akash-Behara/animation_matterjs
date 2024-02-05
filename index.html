@@ -89,7 +89,7 @@
             // Create corresponding physics bodies for the custom divs
             const fallingDivs = [];
             const customBodies = [];
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < words.length; i++) {
                 const customDiv = document.createElement('div');
                 customDiv.className = 'custom-div';
                 customDiv.textContent = words[i]
@@ -111,9 +111,9 @@
 
             // collide div
             const collidingBody = Matter.Bodies.rectangle(
-                600, 220,
-                200, 100,
-                { restitution: 0.2, friction: 0.1, render: { fillStyle: 'transparent' } }
+                700, 210,
+                300, 150,
+                { restitution: 0.2, friction: 0.2, density: 0.01, render: { fillStyle: 'transparent' } }
             )
 
             const methodologBox = document.createElement('div');
@@ -131,9 +131,9 @@
             Matter.Events.on(engine, 'beforeUpdate', function () {
                 fallingDivs.forEach((customDiv, index) => {
                     const customBody = customBodies[index];
-                    customDiv.customDiv.style.transform = `translate(${customBody.position.x - 433}px, ${customBody.position.y -152}px) rotate(${customBody.angle}rad)`;
+                    customDiv.customDiv.style.transform = `translate(${customBody.position.x - 493}px, ${customBody.position.y -152}px) rotate(${customBody.angle}rad)`;
                 });
-                methodologBox.style.transform = `translate(${collidingBody.position.x - 580}px, ${collidingBody.position.y - 160}px) rotate(${collidingBody.angle}rad)`;
+                methodologBox.style.transform = `translate(${collidingBody.position.x - 650}px, ${collidingBody.position.y - 160}px)`;
                 document.body.appendChild(methodologBox);
             });
 
@@ -143,7 +143,7 @@
             setTimeout(() => {
                 Matter.World.remove(engine.world, [leftwall, rightwall])
                 // Matter.Body.setPosition(collidingBody, { x: 200, y: 0 });
-                Matter.Body.applyForce(collidingBody, { x: -500, y: 200 }, { x: -1.5, y: 0 });
+                Matter.Body.applyForce(collidingBody, { x: -500, y: 200 }, { x: -23.8, y: 0 });
                 Matter.World.add(engine.world, [collidingBody]);
                 methodologBox.style.visibility = 'visible'
             }, 3000)

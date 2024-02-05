@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        .custom-div {
+            position: absolute;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            /* background-color: red; */
+            z-index: 999;
+            /* display: none; */
+        }
+
+        canvas {
+            background: #000 !important;
+        }
+        .canvas__container{
+            width: 500px;
+            height: 300px;
+            display: block;
+            background: #000 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas__container"></div>
+    
+    <script>
+        let words = ['End to End Automation', 'Software Development', 'Integration with Website/s', 'SMS / Email engines', 'Andriod App Development', 'ERP Integration']
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create an engine
+            const engine = Matter.Engine.create();
+            // Create a renderer
+            const render = Matter.Render.create({
+                element: document.getElementById('canvas__container'),
+                engine: engine,
+                options: {
+                    width: 500,
+                    height: 300,
+                    wireframes: false,
+                }
+            });
+
+            const leftwall =  Matter.Bodies.rectangle(
+                10, // X-coordinate
+                0, // Y-coordinate (bottom of the screen)
+                8, // Width (equal to canvas width)
+                2000,  // Height (adjust as needed)
+                { isStatic: true, render: { fillStyle: '' } } // Set to static and add a fill color
+            );
+            const rightwall =  Matter.Bodies.rectangle(
+                500, // X-coordinate
+                0, // Y-coordinate (bottom of the screen)
+                8, // Width (equal to canvas width)
+                2000,  // Height (adjust as needed)
+                { isStatic: true, render: { fillStyle: '' } } // Set to static and add a fill color
+            );
+            const ground =  Matter.Bodies.rectangle(
+                250, // X-coordinate
+                300, // Y-coordinate (bottom of the screen)
+                400, // Width (equal to canvas width)
+                1,  // Height (adjust as needed)
+                { isStatic: true, render: { fillStyle: '#2ecc72' } } // Set to static and add a fill color
+            );
+            // Create two rectangular bodies
+            
+            // Create corresponding physics bodies for the custom divs
+            const fallingDivs = [];
+            const customBodies = [];
+            for (let i = 0; i < words.length; i++) {
+                const customDiv = document.createElement('div');
+                customDiv.className = 'custom-div';
+                customDiv.textContent = words[i]
+                customDiv.style.border = `2px solid #2ecc72`;
+                document.body.appendChild(customDiv);
+
+                let xpos = Math.random() * 300;
+                const customBody = Matter.Bodies.rectangle(
+                    xpos,
+                    0,
+                    customDiv.clientWidth + 0.5,
+                    customDiv.clientHeight + 0.5,
+                    { restitution: 0.5, friction: 0.1, render: { fillStyle: '' } }
+                );
+                customBodies.push(customBody);
+
+                fallingDivs.push({customDiv: customDiv, xpos: customBody.position.x});
+            }
+
+            // collide div
+            const collidingBody = Matter.Bodies.rectangle(
+                5000, 0,
+                100, 100,
+                { restitution: 0.5, friction: 0.2, render: { fillStyle: '#e74c3c' } }
+            )
+
+            //ADD to world
+            Matter.World.add(engine.world, [leftwall, rightwall, ground, ...customBodies, collidingBody]);
+
+            // Run the engine
+            Matter.Engine.run(engine);
+            
+            // Update the position of the custom divs based on the physics simulation
+            Matter.Events.on(engine, 'beforeUpdate', function () {
+                fallingDivs.forEach((customDiv, index) => {
+                    const customBody = customBodies[index];
+                    customDiv.customDiv.style.transform = `translate(${customBody.position.x - 250}px, ${customBody.position.y - 152}px) rotate(${customBody.angle}rad)`;
+                });
+            });
+
+            setTimeout(() => {
+                Matter.World.remove(engine.world, [leftwall, rightwall])
+                Matter.Body.setPosition(collidingBody, { x: 200, y: -10 });
+            }, 3000)
+            // Run the renderer
+            Matter.Render.run(render);
+        });
+    </script>
+</body>
+</html>

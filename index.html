@@ -143,7 +143,7 @@
             setTimeout(() => {
                 Matter.World.remove(engine.world, [leftwall, rightwall])
                 // Matter.Body.setPosition(collidingBody, { x: 200, y: 0 });
-                Matter.Body.applyForce(collidingBody, { x: -500, y: 200 }, { x: -23.8, y: 0 });
+                Matter.Body.applyForce(collidingBody, { x: -500, y: 200 }, { x: -24.5, y: 0 });
                 Matter.World.add(engine.world, [collidingBody]);
                 methodologBox.style.visibility = 'visible'
             }, 3000)

@@ -1,152 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matter.js Box Animation</title>
+  <style>
+    * { box-sizing: border-box; }
 
-        .custom-div {
-            position: absolute;
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: white;
-            /* background-color: red; */
-            z-index: 999;
-            /* display: none; */
-        }
+body { font-family: sans-serif; }
 
-        canvas {
-            background: #000 !important;
-        }
-        .canvas__container{
-            width: 500px;
-            height: 300px;
-            display: block;
-            background: #000 !important;
-        }
+.scene {
+  width: 200px;
+  height: 200px;
+  border: 1px solid #CCC;
+  margin: 80px;
+  perspective: 400px;
+}
 
-        .methodology__txt{
-            font-size: 44px;
-            font-weight: 900;
-            color: white;
-            text-align: center;
-            visibility: hidden;
-        }
-    </style>
+.cube {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: translateZ(-100px);
+  transition: transform 1s;
+}
+
+.cube.show-front  { transform: translateZ(-100px) rotateY(   0deg); }
+.cube.show-right  { transform: translateZ(-100px) rotateY( -90deg); }
+.cube.show-back   { transform: translateZ(-100px) rotateY(-180deg); }
+.cube.show-left   { transform: translateZ(-100px) rotateY(  90deg); }
+.cube.show-top    { transform: translateZ(-100px) rotateX( -90deg); }
+.cube.show-bottom { transform: translateZ(-100px) rotateX(  90deg); }
+
+.cube__face {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border: 2px solid black;
+  line-height: 200px;
+  font-size: 40px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.cube__face--front  { background: hsla(  0, 100%, 50%, 0.7); }
+.cube__face--right  { background: hsla( 60, 100%, 50%, 0.7); }
+.cube__face--back   { background: hsla(120, 100%, 50%, 0.7); }
+.cube__face--left   { background: hsla(180, 100%, 50%, 0.7); }
+.cube__face--top    { background: hsla(240, 100%, 50%, 0.7); }
+.cube__face--bottom { background: hsla(300, 100%, 50%, 0.7); }
+
+.cube__face--front  { transform: rotateY(  0deg) translateZ(100px); }
+.cube__face--right  { transform: rotateY( 90deg) translateZ(100px); }
+.cube__face--back   { transform: rotateY(180deg) translateZ(100px); }
+.cube__face--left   { transform: rotateY(-90deg) translateZ(100px); }
+.cube__face--top    { transform: rotateX( 90deg) translateZ(100px); }
+.cube__face--bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+.cube:hover{
+    transform: rotate(360deg);
+}
+
+label { margin-right: 10px; }
+
+    canvas {
+      display: flex;
+    }
+
+    #container{
+        height: 100%;
+        width: 100%;
+    }
+    .custom-div{
+        color: white;
+        position: absolute;
+        top: 0;
+        left: 0;
+        /* transform: translate(-50%, -50%); */
+        padding: 10px 20px;
+        border: 2px solid red;
+    }
+    .Hero__Services__Container__Canvas{
+        position: relative;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.9.1/dist/gsap.min.js"></script>
 </head>
 <body>
-    <div id="canvas__container"></div>
-    
+    <div class="scene">
+        <div class="cube">
+          <div class="cube__face cube__face--front">back</div>
+          <div class="cube__face cube__face--back">front</div>
+          <div class="cube__face cube__face--right"></div>
+          <div class="cube__face cube__face--left"></div>
+          <div class="cube__face cube__face--top"></div>
+          <div class="cube__face cube__face--bottom"></div>
+        </div>
+      </div>
+      <script>
+
+            var cube = document.querySelector('.cube');
+            var currentClass = '';
+
+            function changeSide(e) {
+                
+                if(e === 'enter'){
+                    var showClass = 'show-front';
+                    if ( currentClass ) {
+                        cube.classList.remove( currentClass );
+                    }
+                    cube.classList.add( showClass );
+                    currentClass = showClass;
+                } else {
+                    var showClass = 'show-back';
+                    if ( currentClass ) {
+                        cube.classList.remove( currentClass );
+                    }
+                    cube.classList.add( showClass );
+                    currentClass = showClass;
+                }
+            }
+            // set initial side
+            changeSide();
+
+            cube.addEventListener( 'mouseenter', changeSide('enter') );
+            cube.addEventListener( 'mouseleave', changeSide('leave') );
+      </script>
+    <div id="Hero__Services__Container__Canvas"></div>
     <script>
-        let words = ['End to End Automation', 'Software Development', 'Integration with Website/s', 'SMS / Email engines', 'Andriod App Development', 'ERP Integration']
+        let services = ['End to End Automation', 'Software Development', 'Integration with Website/s', 'SMS / Email engines', 'Andriod App Development', 'ERP Integration']
         document.addEventListener('DOMContentLoaded', function () {
-            // Create an engine
+            const canva = document.getElementById('Hero__Services__Container__Canvas')
+            
+
             const engine = Matter.Engine.create();
-            // Create a renderer
             const render = Matter.Render.create({
-                element: document.getElementById('canvas__container'),
+                element: document.getElementById('Hero__Services__Container__Canvas'),
                 engine: engine,
                 options: {
-                    width: 500,
-                    height: 300,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
                     wireframes: false,
+                    background: '#000',
                 }
             });
 
-            const leftwall =  Matter.Bodies.rectangle(
-                10, // X-coordinate
-                0, // Y-coordinate (bottom of the screen)
-                8, // Width (equal to canvas width)
-                2000,  // Height (adjust as needed)
-                { isStatic: true, render: { fillStyle: '' } } // Set to static and add a fill color
-            );
-            const rightwall =  Matter.Bodies.rectangle(
-                500, // X-coordinate
-                0, // Y-coordinate (bottom of the screen)
-                8, // Width (equal to canvas width)
-                2000,  // Height (adjust as needed)
-                { isStatic: true, render: { fillStyle: '' } } // Set to static and add a fill color
-            );
-            const ground =  Matter.Bodies.rectangle(
-                250, // X-coordinate
-                300, // Y-coordinate (bottom of the screen)
-                400, // Width (equal to canvas width)
-                1,  // Height (adjust as needed)
-                { isStatic: true, render: { fillStyle: '#2ecc72' } } // Set to static and add a fill color
-            );
-            // Create two rectangular bodies
+                const ground = Matter.Bodies.rectangle(window.innerWidth / 2, 600, 800, 8, { isStatic: true, restitution: 0.0, friction: 0.1, render: { fillStyle: 'red' } });
+                const box2 = Matter.Bodies.rectangle(1280, 400, 200, 200, { restitution: -10, friction: 10, render: { fillStyle: 'red' } });
+
+                const fallingDivs = [];
+                const customBodies = [];
+
+
+                
+                for(let i = 0; i < services.length; i++){
+                    const customDiv = document.createElement('div');
+                    customDiv.id = `custom${i}`
+                    customDiv.className = 'custom-div';
+                    customDiv.textContent = services[i]
+                    document.getElementById('Hero__Services__Container__Canvas').appendChild(customDiv);
+
+                    let xpos = window.innerWidth / 2 
+                    const box = Matter.Bodies.rectangle(xpos, 0, customDiv.clientWidth, customDiv.clientHeight, { restitution: 0.0, friction: 0.5, render: { fillStyle: '' } });
+
+                    customBodies.push(box);
+                    fallingDivs.push({div: customDiv, xpos: xpos})
+                }
+                
+                
+                // setTimeout(() => {
+                    Matter.Body.applyForce(box2, { x: -500, y: 0 }, { x: -1.2, y: 0 });
+                // }, 1000);
+                
+                // gsap.to(box2.position, {
+                //     x: window.innerWidth / 2,
+                //     duration: 3,
+                //     ease: "power2.inOut",
+                //     onUpdate: function() {
+                //         Matter.Body.applyForce(box2, { x: 0, y: 0 }, { x: -31.2, y: 0 });
+                //         var animatedDiv = document.getElementById('custom1');
+                //         animatedDiv.style.transform = `translate(${box2.position.x}px, ${box2.position.y}px)`;
+                //     },
+                //     onComplete: function() {
+                //         // Animation is complete, box stays in place
+                //         // Matter.Sleeping.set(customBodies[1], true); 
+                //     }
+                // });
             
-            // Create corresponding physics bodies for the custom divs
-            const fallingDivs = [];
-            const customBodies = [];
-            for (let i = 0; i < words.length; i++) {
-                const customDiv = document.createElement('div');
-                customDiv.className = 'custom-div';
-                customDiv.textContent = words[i]
-                customDiv.style.border = `2px solid #2ecc72`;
-                document.body.appendChild(customDiv);
+                Matter.World.add(engine.world, [ground,box2, ...customBodies]);
 
-                let xpos = Math.random() * 300;
-                const customBody = Matter.Bodies.rectangle(
-                    xpos,
-                    0,
-                    customDiv.clientWidth + 0.5,
-                    customDiv.clientHeight + 0.5,
-                    { restitution: 0.5, friction: 0.1, render: { fillStyle: 'transparent' } }
-                );
-                customBodies.push(customBody);
-
-                fallingDivs.push({customDiv: customDiv, xpos: customBody.position.x});
-            }
-
-            // collide div
-            const collidingBody = Matter.Bodies.rectangle(
-                700, 210,
-                300, 150,
-                { restitution: 0.2, friction: 0.2, density: 0.01, render: { fillStyle: 'transparent' } }
-            )
-
-            const methodologBox = document.createElement('div');
-            methodologBox.textContent = 'OWN METHODOLOGY'
-            methodologBox.className = 'methodology__txt'
+                Matter.Engine.run(engine)
             
 
-            //ADD to world
-            Matter.World.add(engine.world, [leftwall, rightwall, ground, ...customBodies]);
-
-            // Run the engine
-            Matter.Engine.run(engine);
-            
-            // Update the position of the custom divs based on the physics simulation
-            Matter.Events.on(engine, 'beforeUpdate', function () {
-                fallingDivs.forEach((customDiv, index) => {
-                    const customBody = customBodies[index];
-                    customDiv.customDiv.style.transform = `translate(${customBody.position.x - 493}px, ${customBody.position.y -152}px) rotate(${customBody.angle}rad)`;
+                Matter.Events.on(engine, 'afterUpdate', function () {
+                    fallingDivs.forEach((div, idx) => {
+                        const customBody = customBodies[idx]
+                        div.div.style.transform = `translate(${customBody.position.x - 90}px, ${(customBody.position.y - (20))}px) rotate(${customBody.angle}rad)`;
+                    })
                 });
-                methodologBox.style.transform = `translate(${collidingBody.position.x - 650}px, ${collidingBody.position.y - 160}px)`;
-                document.body.appendChild(methodologBox);
-            });
 
-            // Run the renderer
-            Matter.Render.run(render);
-
-            setTimeout(() => {
-                Matter.World.remove(engine.world, [leftwall, rightwall])
-                // Matter.Body.setPosition(collidingBody, { x: 200, y: 0 });
-                Matter.Body.applyForce(collidingBody, { x: -500, y: 200 }, { x: -24.5, y: 0 });
-                Matter.World.add(engine.world, [collidingBody]);
-                methodologBox.style.visibility = 'visible'
-            }, 3000)
+                Matter.Render.run(render);
         });
     </script>
 </body>

@@ -59,9 +59,7 @@ body { font-family: sans-serif; }
 .cube__face--top    { transform: rotateX( 90deg) translateZ(100px); }
 .cube__face--bottom { transform: rotateX(-90deg) translateZ(100px); }
 
-.cube:hover{
-    transform: rotate(360deg);
-}
+
 
 label { margin-right: 10px; }
 
@@ -92,8 +90,8 @@ label { margin-right: 10px; }
 <body>
     <div class="scene">
         <div class="cube">
-          <div class="cube__face cube__face--front">back</div>
-          <div class="cube__face cube__face--back">front</div>
+          <div class="cube__face cube__face--front">front</div>
+          <div class="cube__face cube__face--back">back</div>
           <div class="cube__face cube__face--right"></div>
           <div class="cube__face cube__face--left"></div>
           <div class="cube__face cube__face--top"></div>
@@ -106,16 +104,15 @@ label { margin-right: 10px; }
             var currentClass = '';
 
             function changeSide(e) {
-                
                 if(e === 'enter'){
-                    var showClass = 'show-front';
+                    var showClass = 'show-back';
                     if ( currentClass ) {
                         cube.classList.remove( currentClass );
                     }
                     cube.classList.add( showClass );
                     currentClass = showClass;
-                } else {
-                    var showClass = 'show-back';
+                } if(e === 'leave') {
+                    var showClass = 'show-front';
                     if ( currentClass ) {
                         cube.classList.remove( currentClass );
                     }
@@ -126,9 +123,15 @@ label { margin-right: 10px; }
             // set initial side
             changeSide();
 
-            cube.addEventListener( 'mouseenter', changeSide('enter') );
-            cube.addEventListener( 'mouseleave', changeSide('leave') );
+            cube.addEventListener( 'mouseenter', () => {
+                changeSide('enter') }
+            );
+            cube.addEventListener( 'mouseleave', () => {
+                changeSide('leave') 
+            }
+            );
       </script>
+
     <div id="Hero__Services__Container__Canvas"></div>
     <script>
         let services = ['End to End Automation', 'Software Development', 'Integration with Website/s', 'SMS / Email engines', 'Andriod App Development', 'ERP Integration']
